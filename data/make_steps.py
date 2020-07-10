@@ -48,7 +48,7 @@ if __name__=='__main__':
 
         for fname in fnames:
 
-            if fname != '00010100_s001_t000.csv': continue
+            # if fname != '00010100_s001_t000.csv': continue # only run for 1 file
 
             if '.csv' in fname:
                 name = fname.replace('.csv','')
@@ -57,10 +57,13 @@ if __name__=='__main__':
                 data_dict = make_data_dict(name)
                 step_dict = {}
                 for key in data_dict.keys():
+                    if key != 'FP1': continue # only run for FP1 node
+
                     print('Making steps for {}...'.format(key))
                     step_dict[key] = step_detection(data_dict, key)
                 
-                with open(fname, 'w') as csv_file:
+                path_name = os.path.join(args.save_dir, fname)
+                with open(path_name, 'w') as csv_file:
                     writer = csv.writer(csv_file)
                     for k, v in step_dict.items():
                         writer.writerow([k, v])
