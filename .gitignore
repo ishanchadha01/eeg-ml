@@ -1,2 +1,5 @@
 # use make_csv to generate csv and make_steps to generate valid ranges
 *.csv
+
+# init for package/module names
+*.pyc

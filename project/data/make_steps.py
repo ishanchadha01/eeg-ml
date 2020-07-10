@@ -8,22 +8,22 @@ import csv
 def make_data_dict(fname):
     parent = os.path.split(os.getcwd())[0]
     fname = os.path.join(os.path.join(parent, 'data/csv-data/{}.csv'.format(fname)))
-    data =  np.loadtxt(open(fname, 'rb'), delimiter=',')
-    header = open(fname, "rb").readline()
+    data =  np.loadtxt(open(fname, 'r'), delimiter=',')
+    header = open(fname, 'r').readline()
     header_arr = header.replace('\n', '').replace('EEG ', '').replace('-REF', '').replace('# ', '').split(',') # labels from 1st line of csv
     data_dict = { key:val for (key,val) in zip(header_arr, data) }
     return data_dict
 
 def step_detection(data_dict, wave_type):
     data = data_dict[wave_type]
-    arr = map(float, data)
-    arr -= np.average(arr)
+    arr = list(map(float, data))
+    arr -= np.mean(arr)
     step = np.hstack((np.ones(len(arr)), -1*np.ones(len(arr))))
     arr_step = np.convolve(arr, step, mode='valid') # take convolution of time vs wave
 
     step_indices, = np.where(arr_step > 1)
     steps = []
-    if step_indices.size == 0: return steps
+    if step_indices.size == 0: return [0, len(arr) - 1]
     steps.append([0, step_indices[0]]) # append beginning range
 
     # find all intermediate ranges that are not in break range
