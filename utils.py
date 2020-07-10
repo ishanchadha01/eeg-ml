@@ -3,8 +3,7 @@ import os
 import matplotlib.pyplot as plt
 
 def make_data_dict(fname):
-    parent = os.path.split(os.getcwd())[0]
-    fname = os.path.join(os.path.join(parent, 'data/csv-data/{}.csv'.format(fname)))
+    fname = os.path.join('data/csv-data/{}.csv'.format(fname))
     data =  np.loadtxt(open(fname, 'rb'), delimiter=',')
     header = open(fname, "rb").readline()
     header_arr = header.replace('\n', '').replace('EEG ', '').replace('-REF', '').replace('# ', '').split(',') # labels from 1st line of csv
@@ -17,11 +16,17 @@ def step_detection(data_dict, wave_type):
     arr -= np.average(arr)
     step = np.hstack((np.ones(len(arr)), -1*np.ones(len(arr))))
     arr_step = np.convolve(arr, step, mode='valid') # take convolution of time vs wave
-    arr_step = [ np.log(val) if val > 0 else 0 for val in arr_step ]
-    step_mean = np.mean(arr_step)
-    step_std = np.std(arr_step)
-    print(step_mean, step_std)
-    return abs(arr_step - step_mean) < 10 * step_std
+
+    step_indices, = np.where(arr_step > 1)
+    steps = []
+    if step_indices.size == 0: return steps
+    steps.append([0, step_indices[0]]) # append beginning range
+
+    # find all intermediate ranges that are not in break range
+    for i in range(len(step_indices) - 1):
+        if step_indices[i] < step_indices[i + 1] - 1: steps.append([step_indices[i], step_indices[i + 1]])
+    steps.append([step_indices[-1], len(arr) - 1]) # append end range
+    return steps
 
 
 if __name__=='__main__':
