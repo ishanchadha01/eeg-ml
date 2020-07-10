@@ -1,2 +1,2 @@
-# use make_csv to generate csv
+# use make_csv to generate csv and make_steps to generate valid ranges
 *.csv
