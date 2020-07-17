@@ -24,4 +24,4 @@ if __name__=='__main__':
                 edf = mne.io.read_raw_edf(os.path.join(dirpath, fname))
                 header = ','.join(edf.ch_names)
                 save_file = '{}/{}.csv'.format(args.save_dir, name)
-                np.savetxt(save_file, edf.get_data(), delimiter=',', header=header)
+                np.savetxt(save_file, edf.get_data().T, delimiter=',', header=header)
